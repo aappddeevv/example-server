@@ -22,7 +22,7 @@ import akka.http.scaladsl.server.Directives.get
 import akka.http.scaladsl.server.Directives.logRequestResult
 import akka.http.scaladsl.server.Directives.path
 import akka.http.scaladsl.server.Directives.pathEndOrSingleSlash
-import akka.http.scaladsl.server.Directives.post
+import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.RouteResult.route2HandlerFlow
 import akka.http.scaladsl.server.directives.LoggingMagnet.forRequestResponseFromMarker
 import akka.stream.ActorMaterializer
@@ -52,9 +52,19 @@ object Server extends LazyLogging {
         }
       } ~ post {
         complete("POST succeeded")
-      } ~ path("lines") { 
-        get { 
+      } ~ path("lines") {
+        get {
           complete("1\n2\n3\n")
+        }
+      } ~ path("number" / LongNumber) { n =>
+        get {
+          complete(n.toString)
+        }
+      } ~ path("delay" / LongNumber) { n =>
+        get {
+          import scala.concurrent._
+          import scala.concurrent.duration._
+          complete(akka.pattern.after(n.millis, system.scheduler)(Future { "Delayed " + n.toString + " milliseconds" }))
         }
       }
     }
@@ -64,7 +74,7 @@ object Server extends LazyLogging {
     val j = new JCommander(Args, args.toArray: _*)
     if (Args.help) {
       val sb = new java.lang.StringBuilder()
-      j.setProgramName("crmauth")
+      j.setProgramName("example-server")
       j.usage(sb) // only way to get pre-formatted usage info
       sb.append("An application.conf can be use to specify some parameters.")
       println(sb.toString)
