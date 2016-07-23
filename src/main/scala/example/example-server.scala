@@ -61,10 +61,13 @@ object Server extends LazyLogging {
           complete(n.toString)
         }
       } ~ path("delay" / LongNumber) { n =>
-        get {
-          import scala.concurrent._
-          import scala.concurrent.duration._
-          complete(akka.pattern.after(n.millis, system.scheduler)(Future { "Delayed " + n.toString + " milliseconds" }))
+        withoutRequestTimeout {
+          get {
+            import scala.concurrent._
+            import scala.concurrent.duration._
+            println(s"Delaying $n milliseconds.")
+            complete(akka.pattern.after(n.millis, system.scheduler)(Future { n.toString }))
+          }
         }
       }
     }
