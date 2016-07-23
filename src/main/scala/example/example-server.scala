@@ -69,6 +69,12 @@ object Server extends LazyLogging {
             complete(akka.pattern.after(n.millis, system.scheduler)(Future { n.toString }))
           }
         }
+      } ~ path("json") { 
+        get { 
+          complete("""{ 
+"result" : "hello world"
+}""")
+        }
       }
     }
 
