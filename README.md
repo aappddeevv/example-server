@@ -8,3 +8,5 @@ server for testing and learning purposes.
 
 The file src/main/resources/application.conf has a few
 parameters that can be changed.
+
+The notes are located on gitbook: [https://www.gitbook.com/book/aappddeevv/my-dispatch-user-notes/details](https://www.gitbook.com/book/aappddeevv/my-dispatch-user-notes/details).
