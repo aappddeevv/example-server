@@ -26,6 +26,14 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.RouteResult.route2HandlerFlow
 import akka.http.scaladsl.server.directives.LoggingMagnet.forRequestResponseFromMarker
 import akka.stream.ActorMaterializer
+import akka.http.scaladsl.model.StatusCodes
+
+import spray.json._
+
+object customers extends CustomerRespository
+import customers._
+object msgs extends MsgRepository
+import msgs._
 
 object Args {
   @Parameter(names = Array("-h", "--help"), help = true)
@@ -33,6 +41,8 @@ object Args {
 }
 
 object Server extends LazyLogging {
+
+  import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
@@ -69,11 +79,32 @@ object Server extends LazyLogging {
             complete(akka.pattern.after(n.millis, system.scheduler)(Future { n.toString }))
           }
         }
-      } ~ path("json") { 
-        get { 
-          complete("""{ 
+      } ~ path("json") {
+        get {
+          complete("""{
 "result" : "hello world"
 }""")
+        }
+      } ~ pathPrefix("customers") {
+        path(IntNumber) { n =>
+          get {
+            onSuccess(customers.find(n)) {
+              case Some(customer) => complete(customer)
+              case None => complete(StatusCodes.NotFound)
+            }
+          }
+        } ~ path("posts-from" / IntNumber) { n =>
+          get {
+            onSuccess(msgs.getMsgsFrom(n)) { m =>
+              complete(m)
+            }
+          }
+        } ~ path("posts-to" / IntNumber) { n =>
+          get {
+            onSuccess(msgs.getMsgsTo(n)) { m =>
+              complete(m)
+            }
+          }
         }
       }
     }

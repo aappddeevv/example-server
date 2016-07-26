@@ -19,7 +19,7 @@ libraryDependencies ++= Seq(
     ,"com.typesafe.akka" %% "akka-http-jackson-experimental" % "latest.release"
     ,"com.typesafe.akka" %% "akka-http-spray-json-experimental" % "latest.release"
     ,"com.typesafe.akka" %% "akka-http-xml-experimental" % "latest.release"
-    ,"com.typesafe" % "config" % "latest.release"
+    ,"com.typesafe" % "config" % "1.3.0"
     ,"org.scala-lang.modules" %% "scala-xml" % "latest.release"
     ,"com.beust" % "jcommander" % "latest.release"
     ,"ch.qos.logback" % "logback-classic" % "latest.release"
