@@ -1,3 +1,5 @@
+enablePlugins(JavaAppPackaging)
+
 name := "example-server"
 organization := "example"
 version := "0.1.0"
