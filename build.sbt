@@ -6,8 +6,11 @@ scalaVersion := "2.11.8"
 scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
 
 resolvers += Resolver.url("file://" + Path.userHome.absolutePath + "/.ivy/local")
-resolvers += Resolver.sonatypeRepo("releases")
 resolvers += "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository"
+resolvers += Resolver.sonatypeRepo("releases")
+resolvers += Resolver.sonatypeRepo("public")
+resolvers += Resolver.sonatypeRepo("snapshots")
+
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % "latest.release"
