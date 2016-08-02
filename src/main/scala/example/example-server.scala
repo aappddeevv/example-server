@@ -38,6 +38,9 @@ import msgs._
 object Args {
   @Parameter(names = Array("-h", "--help"), help = true)
   var help: Boolean = false
+
+  @Parameter(names = Array("-c"), description = "Use a count down latch and URL /shutdown to shutdown.")
+  var useLatch: Boolean = false
 }
 
 object Server extends LazyLogging {
@@ -47,10 +50,16 @@ object Server extends LazyLogging {
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
   implicit val ec = system.dispatcher
+  val latch = new java.util.concurrent.CountDownLatch(1)
 
   val route =
     logRequestResult("example-server") {
-      pathEndOrSingleSlash {
+      path("shutdown") {
+        get {
+          latch.countDown()
+          complete("Shutting down server")
+        }
+      } ~ pathEndOrSingleSlash {
         get {
           complete(<h1>you have reached the example server</h1>)
         }
@@ -135,8 +144,14 @@ object Server extends LazyLogging {
         return
     }
 
-    println(s"Started server on $server.\nPress ENTER to stop.")
-    StdIn.readLine()
+    println(s"Started server on $server.")
+    if (!Args.useLatch) {
+      println("Press ENTER to stop.")
+      StdIn.readLine()
+    } else {
+      println("Send message /shutdown message to server.")
+      latch.await
+    }
 
     binding flatMap { _.unbind() } onComplete { _ => system.terminate() }
   }
