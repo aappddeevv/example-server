@@ -63,6 +63,10 @@ object Server extends LazyLogging {
         get {
           complete(<h1>you have reached the example server</h1>)
         }
+      } ~ path("400") { 
+        get { 
+          complete(StatusCodes.BadRequest, "Bad request!")
+        }
       } ~ path("echo") {
         get {
           extractRequest { req =>
